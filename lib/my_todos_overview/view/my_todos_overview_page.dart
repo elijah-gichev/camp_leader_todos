@@ -3,25 +3,28 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_todos/edit_todo/view/edit_todo_page.dart';
 import 'package:flutter_todos/l10n/l10n.dart';
-import 'package:flutter_todos/todos_overview/todos_overview.dart';
+import 'package:flutter_todos/my_todos_overview/bloc/my_todos_overview_bloc.dart';
+import 'package:flutter_todos/my_todos_overview/widgets/todo_list_tile.dart';
+import 'package:flutter_todos/my_todos_overview/widgets/todos_overview_filter_button.dart';
+import 'package:flutter_todos/my_todos_overview/widgets/todos_overview_options_button.dart';
 import 'package:todos_repository/todos_repository.dart';
 
-class TodosOverviewPage extends StatelessWidget {
-  const TodosOverviewPage({Key? key}) : super(key: key);
+class MyTodosOverviewPage extends StatelessWidget {
+  const MyTodosOverviewPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => TodosOverviewBloc(
+      create: (context) => MyTodosOverviewBloc(
         todosRepository: context.read<TodosRepository>(),
-      )..add(const TodosOverviewSubscriptionRequested()),
-      child: const TodosOverviewView(),
+      )..add(const MyTodosOverviewSubscriptionRequested()),
+      child: const MyTodosOverviewView(),
     );
   }
 }
 
-class TodosOverviewView extends StatelessWidget {
-  const TodosOverviewView({Key? key}) : super(key: key);
+class MyTodosOverviewView extends StatelessWidget {
+  const MyTodosOverviewView({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -29,7 +32,7 @@ class TodosOverviewView extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Задачи отряда'),
+        title: Text('Мои задачи'),
         actions: const [
           TodosOverviewFilterButton(),
           TodosOverviewOptionsButton(),
@@ -37,7 +40,7 @@ class TodosOverviewView extends StatelessWidget {
       ),
       body: MultiBlocListener(
         listeners: [
-          BlocListener<TodosOverviewBloc, TodosOverviewState>(
+          BlocListener<MyTodosOverviewBloc, MyTodosOverviewState>(
             listenWhen: (previous, current) => previous.status != current.status,
             listener: (context, state) {
               if (state.status == TodosOverviewStatus.failure) {
@@ -51,7 +54,7 @@ class TodosOverviewView extends StatelessWidget {
               }
             },
           ),
-          BlocListener<TodosOverviewBloc, TodosOverviewState>(
+          BlocListener<MyTodosOverviewBloc, MyTodosOverviewState>(
             listenWhen: (previous, current) => previous.lastDeletedTodo != current.lastDeletedTodo && current.lastDeletedTodo != null,
             listener: (context, state) {
               final deletedTodo = state.lastDeletedTodo!;
@@ -69,7 +72,7 @@ class TodosOverviewView extends StatelessWidget {
                       label: l10n.todosOverviewUndoDeletionButtonText,
                       onPressed: () {
                         messenger.hideCurrentSnackBar();
-                        context.read<TodosOverviewBloc>().add(const TodosOverviewUndoDeletionRequested());
+                        context.read<MyTodosOverviewBloc>().add(const MyTodosOverviewUndoDeletionRequested());
                       },
                     ),
                   ),
@@ -77,7 +80,7 @@ class TodosOverviewView extends StatelessWidget {
             },
           ),
         ],
-        child: BlocBuilder<TodosOverviewBloc, TodosOverviewState>(
+        child: BlocBuilder<MyTodosOverviewBloc, MyTodosOverviewState>(
           builder: (context, state) {
             if (state.todos.isEmpty) {
               if (state.status == TodosOverviewStatus.loading) {
@@ -101,15 +104,15 @@ class TodosOverviewView extends StatelessWidget {
                     TodoListTile(
                       todo: todo,
                       onToggleCompleted: (isCompleted) {
-                        context.read<TodosOverviewBloc>().add(
-                              TodosOverviewTodoCompletionToggled(
+                        context.read<MyTodosOverviewBloc>().add(
+                              MyTodosOverviewTodoCompletionToggled(
                                 todo: todo,
                                 isCompleted: isCompleted,
                               ),
                             );
                       },
                       onDismissed: (_) {
-                        context.read<TodosOverviewBloc>().add(TodosOverviewTodoDeleted(todo));
+                        context.read<MyTodosOverviewBloc>().add(MyTodosOverviewTodoDeleted(todo));
                       },
                       onTap: () {
                         Navigator.of(context).push(

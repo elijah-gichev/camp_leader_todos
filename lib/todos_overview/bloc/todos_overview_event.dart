@@ -53,3 +53,12 @@ class TodosOverviewToggleAllRequested extends TodosOverviewEvent {
 class TodosOverviewClearCompletedRequested extends TodosOverviewEvent {
   const TodosOverviewClearCompletedRequested();
 }
+
+class TodosOverviewChooseUser extends TodosOverviewEvent {
+  final User user;
+  final Todo todo;
+  const TodosOverviewChooseUser(this.user, this.todo);
+
+  @override
+  List<Object> get props => [user, todo];
+}

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_todos/edit_todo/edit_todo.dart';
 import 'package:flutter_todos/home/home.dart';
-import 'package:flutter_todos/stats/stats.dart';
+import 'package:flutter_todos/my_todos_overview/view/my_todos_overview_page.dart';
 import 'package:flutter_todos/todos_overview/todos_overview.dart';
 
 class HomePage extends StatelessWidget {
@@ -27,7 +27,7 @@ class HomeView extends StatelessWidget {
     return Scaffold(
       body: IndexedStack(
         index: selectedTab.index,
-        children: const [TodosOverviewPage(), StatsPage()],
+        children: const [TodosOverviewPage(), MyTodosOverviewPage()],
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: FloatingActionButton(
@@ -40,22 +40,42 @@ class HomeView extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            _HomeTabButton(
-              groupValue: selectedTab,
-              value: HomeTab.todos,
-              icon: const Icon(Icons.list_rounded),
+            Expanded(
+              flex: 1,
+              child: _HomeTabButton(
+                groupValue: selectedTab,
+                value: HomeTab.todos,
+                icon: const Icon(Icons.list_rounded),
+              ),
             ),
-            _HomeTabButton(
-              groupValue: selectedTab,
-              value: HomeTab.stats,
-              icon: const Icon(Icons.show_chart_rounded),
+            Expanded(
+              child: _HomeTabButton(
+                groupValue: selectedTab,
+                value: HomeTab.myTodos,
+                icon: const Icon(Icons.location_history_rounded),
+              ),
             ),
+            // Expanded(
+            //   child: _HomeTabButton(
+            //     groupValue: selectedTab,
+            //     value: HomeTab.stats,
+            //     icon: const Icon(Icons.location_history_rounded),
+            //   ),
+            // ),
           ],
         ),
       ),
     );
   }
 }
+
+// Opacity(
+//               opacity: 0,
+//               child: IconButton(
+//                 icon: Icon(Icons.location_history_rounded),
+//                 onPressed: () {},
+//               ),
+//             ),
 
 class _HomeTabButton extends StatelessWidget {
   const _HomeTabButton({
@@ -74,8 +94,7 @@ class _HomeTabButton extends StatelessWidget {
     return IconButton(
       onPressed: () => context.read<HomeCubit>().setTab(value),
       iconSize: 32,
-      color:
-          groupValue != value ? null : Theme.of(context).colorScheme.secondary,
+      color: groupValue != value ? null : Theme.of(context).colorScheme.secondary,
       icon: icon,
     );
   }

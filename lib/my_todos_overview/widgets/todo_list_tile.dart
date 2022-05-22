@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_todos/todos_overview/widgets/select_executor.dart';
 import 'package:todos_repository/todos_repository.dart';
 
 class TodoListTile extends StatelessWidget {
@@ -57,9 +56,11 @@ class TodoListTile extends StatelessWidget {
             borderRadius: BorderRadius.all(Radius.circular(8)),
           ),
           value: todo.isCompleted,
-          onChanged: onToggleCompleted == null ? null : (value) => onToggleCompleted!(value!),
+          onChanged: onToggleCompleted == null
+              ? null
+              : (value) => onToggleCompleted!(value!),
         ),
-        trailing: onTap == null ? null : SelectExecutorOptionsButton(todo),
+        trailing: onTap == null ? null : const Icon(Icons.chevron_right),
       ),
     );
   }

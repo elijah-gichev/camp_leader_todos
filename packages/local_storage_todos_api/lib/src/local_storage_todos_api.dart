@@ -29,15 +29,12 @@ class LocalStorageTodosApi extends TodosApi {
   static const kTodosCollectionKey = '__todos_collection_key__';
 
   String? _getValue(String key) => _plugin.getString(key);
-  Future<void> _setValue(String key, String value) =>
-      _plugin.setString(key, value);
+  Future<void> _setValue(String key, String value) => _plugin.setString(key, value);
 
   void _init() {
     final todosJson = _getValue(kTodosCollectionKey);
     if (todosJson != null) {
-      final todos = List<Map>.from(json.decode(todosJson) as List)
-          .map((jsonMap) => Todo.fromJson(Map<String, dynamic>.from(jsonMap)))
-          .toList();
+      final todos = List<Map>.from(json.decode(todosJson) as List).map((jsonMap) => Todo.fromJson(Map<String, dynamic>.from(jsonMap))).toList();
       _todoStreamController.add(todos);
     } else {
       _todoStreamController.add(const []);
@@ -46,6 +43,18 @@ class LocalStorageTodosApi extends TodosApi {
 
   @override
   Stream<List<Todo>> getTodos() => _todoStreamController.asBroadcastStream();
+
+  void updateTodo(Todo todo) {
+    final todos = [..._todoStreamController.value];
+    final todoIndex = todos.indexWhere((t) => t.title == todo.title);
+    if (todoIndex == -1) {
+      throw TodoNotFoundException();
+    } else {
+      todos.removeAt(todoIndex);
+      _todoStreamController.add(todos);
+      //return _setValue(kTodosCollectionKey, json.encode(todos));
+    }
+  }
 
   @override
   Future<void> saveTodo(Todo todo) {
@@ -58,7 +67,8 @@ class LocalStorageTodosApi extends TodosApi {
     }
 
     _todoStreamController.add(todos);
-    return _setValue(kTodosCollectionKey, json.encode(todos));
+    return Future.value();
+    //return _setValue(kTodosCollectionKey, json.encode(todos));
   }
 
   @override
@@ -87,11 +97,8 @@ class LocalStorageTodosApi extends TodosApi {
   @override
   Future<int> completeAll({required bool isCompleted}) async {
     final todos = [..._todoStreamController.value];
-    final changedTodosAmount =
-        todos.where((t) => t.isCompleted != isCompleted).length;
-    final newTodos = [
-      for (final todo in todos) todo.copyWith(isCompleted: isCompleted)
-    ];
+    final changedTodosAmount = todos.where((t) => t.isCompleted != isCompleted).length;
+    final newTodos = [for (final todo in todos) todo.copyWith(isCompleted: isCompleted)];
     _todoStreamController.add(newTodos);
     await _setValue(kTodosCollectionKey, json.encode(newTodos));
     return changedTodosAmount;

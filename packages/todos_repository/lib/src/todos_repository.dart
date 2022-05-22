@@ -14,6 +14,22 @@ class TodosRepository {
   /// Provides a [Stream] of all todos.
   Stream<List<Todo>> getTodos() => _todosApi.getTodos();
 
+  /// Provides a [Stream] of all todos.
+  Stream<List<Todo>> getTodosByUser(User user) {
+    return _todosApi.getTodos().map((todo) {
+      final todos = todo.where((element) {
+        print(element.title);
+        return element.user == user;
+      });
+
+      return todos.toList();
+    });
+  }
+
+  void updateTodo(Todo todo) {
+    _todosApi.updateTodo(todo);
+  }
+
   /// Saves a [todo].
   ///
   /// If a [todo] with the same id already exists, it will be replaced.
@@ -33,6 +49,5 @@ class TodosRepository {
   /// Sets the `isCompleted` state of all todos to the given value.
   ///
   /// Returns the number of updated todos.
-  Future<int> completeAll({required bool isCompleted}) =>
-      _todosApi.completeAll(isCompleted: isCompleted);
+  Future<int> completeAll({required bool isCompleted}) => _todosApi.completeAll(isCompleted: isCompleted);
 }

@@ -1,6 +1,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:meta/meta.dart';
+import 'package:todos_api/src/models/user.dart';
 import 'package:todos_api/todos_api.dart';
 import 'package:uuid/uuid.dart';
 
@@ -19,7 +20,7 @@ part 'todo.g.dart';
 /// being serialized and deserialized using [toJson] and [fromJson]
 /// respectively.
 /// {@endtemplate}
-@immutable
+
 @JsonSerializable()
 class Todo extends Equatable {
   /// {@macro todo}
@@ -28,6 +29,7 @@ class Todo extends Equatable {
     required this.title,
     this.description = '',
     this.isCompleted = false,
+    this.user,
   })  : assert(
           id == null || id.isNotEmpty,
           'id can not be null and should be empty',
@@ -38,6 +40,9 @@ class Todo extends Equatable {
   ///
   /// Cannot be empty.
   final String id;
+
+  /// USER
+  User? user;
 
   /// The title of the todo.
   ///
@@ -53,6 +58,10 @@ class Todo extends Equatable {
   ///
   /// Defaults to `false`.
   final bool isCompleted;
+
+  void assignUser(User user) {
+    this.user = user;
+  }
 
   /// Returns a copy of this todo with the given values updated.
   ///
