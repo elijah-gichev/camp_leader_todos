@@ -118,6 +118,7 @@ class MyTodosOverviewView extends StatelessWidget {
                         Navigator.of(context).push(
                           EditTodoPage.route(initialTodo: todo),
                         );
+                        //context.read<MyTodosOverviewBloc>().add(MyTodosOverviewSubscriptionRequested());
                       },
                     ),
                 ],

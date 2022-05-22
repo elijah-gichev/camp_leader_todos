@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_todos/home/reps/user_reps.dart';
@@ -9,6 +11,7 @@ part 'my_todos_overview_event.dart';
 part 'my_todos_overview_state.dart';
 
 class MyTodosOverviewBloc extends Bloc<MyTodosOverviewEvent, MyTodosOverviewState> {
+  late Timer _timer;
   MyTodosOverviewBloc({
     required TodosRepository todosRepository,
   })  : _todosRepository = todosRepository,
@@ -20,6 +23,11 @@ class MyTodosOverviewBloc extends Bloc<MyTodosOverviewEvent, MyTodosOverviewStat
     on<MyTodosOverviewFilterChanged>(_onFilterChanged);
     on<MyTodosOverviewToggleAllRequested>(_onToggleAllRequested);
     on<MyTodosOverviewClearCompletedRequested>(_onClearCompletedRequested);
+
+    _timer = Timer.periodic(Duration(seconds: 1), (_) {
+      add(MyTodosOverviewSubscriptionRequested());
+    });
+    //context.read<MyTodosOverviewBloc>().add(MyTodosOverviewSubscriptionRequested());
   }
 
   final TodosRepository _todosRepository;
@@ -97,5 +105,11 @@ class MyTodosOverviewBloc extends Bloc<MyTodosOverviewEvent, MyTodosOverviewStat
     Emitter<MyTodosOverviewState> emit,
   ) async {
     await _todosRepository.clearCompleted();
+  }
+
+  @override
+  Future<void> close() {
+    _timer.cancel();
+    return super.close();
   }
 }
